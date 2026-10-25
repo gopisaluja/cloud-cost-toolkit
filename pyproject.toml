@@ -1,0 +1,71 @@
+[build-system]
+requires = ["hatchling>=1.25,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cloud-cost-toolkit"
+version = "0.1.0"
+description = "Read-only CLI that finds common AWS and GCP waste and estimates the monthly cost."
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "Gobinda Saluja" }]
+requires-python = ">=3.11"
+keywords = ["finops", "aws", "gcp", "cost-optimization", "devops", "cli"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: System :: Systems Administration",
+]
+dependencies = [
+    "boto3>=1.34,<2",
+    "click>=8.2,<9",
+    "google-auth>=2.29,<3",
+    "google-cloud-compute>=1.19,<2",
+    "PyYAML>=6.0.1,<7",
+]
+
+[project.optional-dependencies]
+dev = [
+    "moto[ec2,cloudwatch]>=5.0,<6",
+    "pytest>=8.2,<10",
+    "ruff==0.17.2",
+]
+
+[project.scripts]
+cloudcost = "cloudcost.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["cloudcost"]
+
+[tool.hatch.build.targets.sdist]
+include = ["cloudcost", "tests", "policies", "README.md", "LICENSE"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+    "SIM", # flake8-simplify
+    "C4",  # flake8-comprehensions
+    "PT",  # flake8-pytest-style
+    "RUF", # ruff-specific
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["cloudcost"]

@@ -1,0 +1,78 @@
+# cloud-cost-toolkit - EXAMPLE price list
+# =========================================================================
+# These numbers are illustrative on-demand list prices in USD. They are NOT
+# authoritative and were not verified for any particular date. Cloud prices
+# change, differ by region, and are reduced by contracts, credits, Savings
+# Plans and committed-use discounts.
+#
+# VERIFY every value against the current AWS / Google Cloud pricing pages (or
+# your own billing data) before quoting a number. To use your own prices:
+#
+#     cloudcost --pricing my-prices.yaml aws idle-ebs
+#
+# Units
+#   *_gb_month          USD per GB-month (EBS and snapshots are billed per GiB)
+#   *_iops_month        USD per provisioned IOPS-month
+#   *_mibps_month       USD per provisioned MiB/s-month
+#   *_hour              USD per hour (the tool multiplies by 730 h/month)
+#   nat_gateway_gb      USD per GB processed by a NAT gateway (either direction)
+#
+# Unknown keys are rejected (to catch typos). Missing keys are allowed: the
+# affected findings are still reported, with the cost shown as "n/a".
+# Regions not listed are priced with `fallback_region` and a warning is printed.
+
+note: Example list prices only - verify against current provider pricing before relying on them.
+currency: USD
+
+aws:
+  fallback_region: us-east-1
+  # Baseline performance included in the gp3 storage price.
+  gp3_included_iops: 3000
+  gp3_included_throughput_mibps: 125
+  regions:
+    us-east-1:
+      ebs_gb_month: {gp2: 0.10, gp3: 0.08, io1: 0.125, io2: 0.125, st1: 0.045, sc1: 0.015, standard: 0.05}
+      ebs_iops_month: {gp3: 0.005, io1: 0.065, io2: 0.065}
+      gp3_throughput_mibps_month: 0.04
+      snapshot_gb_month: 0.05
+      snapshot_archive_gb_month: 0.0125
+      public_ipv4_hour: 0.005
+      nat_gateway_hour: 0.045
+      nat_gateway_gb: 0.045
+    eu-west-1:
+      ebs_gb_month: {gp2: 0.11, gp3: 0.088, io1: 0.138, io2: 0.138, st1: 0.05, sc1: 0.0168, standard: 0.055}
+      ebs_iops_month: {gp3: 0.0055, io1: 0.072, io2: 0.072}
+      gp3_throughput_mibps_month: 0.044
+      snapshot_gb_month: 0.05
+      snapshot_archive_gb_month: 0.0125
+      public_ipv4_hour: 0.005
+      nat_gateway_hour: 0.048
+      nat_gateway_gb: 0.048
+    ap-south-1:
+      ebs_gb_month: {gp2: 0.114, gp3: 0.0912, io1: 0.131, io2: 0.131, st1: 0.051, sc1: 0.0174, standard: 0.08}
+      ebs_iops_month: {gp3: 0.0057, io1: 0.068, io2: 0.068}
+      gp3_throughput_mibps_month: 0.0456
+      snapshot_gb_month: 0.05
+      snapshot_archive_gb_month: 0.0125
+      public_ipv4_hour: 0.005
+      nat_gateway_hour: 0.056
+      nat_gateway_gb: 0.056
+
+gcp:
+  fallback_region: us-central1
+  # Regional persistent disks are replicated across two zones and billed at
+  # roughly twice the zonal rate.
+  regional_disk_multiplier: 2
+  regions:
+    us-central1:
+      disk_gb_month: {pd-standard: 0.04, pd-balanced: 0.10, pd-ssd: 0.17, pd-extreme: 0.125}
+      static_ip_unused_hour: 0.01
+    europe-west1:
+      disk_gb_month: {pd-standard: 0.04, pd-balanced: 0.10, pd-ssd: 0.17, pd-extreme: 0.125}
+      static_ip_unused_hour: 0.01
+    asia-south1:
+      disk_gb_month: {pd-standard: 0.048, pd-balanced: 0.12, pd-ssd: 0.204, pd-extreme: 0.15}
+      static_ip_unused_hour: 0.01
+    # Global static external addresses (used by global load balancers).
+    global:
+      static_ip_unused_hour: 0.01
